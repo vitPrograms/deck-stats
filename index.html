@@ -215,6 +215,7 @@
 
       let prevWins = 0;
       let prevLosses = 0;
+      let prevDeck = '';
 
       function triggerWinEffect() {
         // Конфеті
@@ -259,11 +260,17 @@
             )}')`;
             document.querySelector(".hero-name").innerText = data.currentDeck;
 
-            // Перевірка на нові перемоги чи поразки
-            if (current.wins > prevWins) triggerWinEffect();
-            if (current.losses > prevLosses) triggerLoseEffect();
-            prevWins = current.wins;
-            prevLosses = current.losses;
+            // Перевірка на зміну колоди
+            if (data.currentDeck !== prevDeck) {
+              prevWins = current.wins;
+              prevLosses = current.losses;
+              prevDeck = data.currentDeck;
+            } else {
+              if (current.wins > prevWins) triggerWinEffect();
+              if (current.losses > prevLosses) triggerLoseEffect();
+              prevWins = current.wins;
+              prevLosses = current.losses;
+            }
 
             // Оновлення статистики
             document.getElementById("wins").innerText = current.wins;
