@@ -1,132 +1,224 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <style>
-    body {
-      background: rgba(0, 0, 0, 0);
-      font-family: Arial, sans-serif;
-      color: white;
-      text-align: center;
-    }
-    #container {
-      width: 300px;
-      margin: 20px auto;
-    }
-    #hero {
-      width: 100%;
-      height: 150px;
-      object-fit: cover;
-      border-radius: 10px;
-    }
-    #stats {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 10px 0;
-      font-size: 20px;
-    }
-    #wins { color: #0f0; }
-    #losses { color: #f00; }
-    #winrate { font-size: 24px; }
-    #bar {
-      display: flex;
-      height: 20px;
-      width: 100%;
-      background: #333;
-      border-radius: 5px;
-      overflow: hidden;
-    }
-    #win-bar { background: #0f0; }
-    #lose-bar { background: #f00; }
-    #history {
-      display: flex;
-      justify-content: center;
-      gap: 5px;
-      margin-top: 10px;
-    }
-    .match {
-      width: 20px;
-      height: 20px;
-      border-radius: 3px;
-    }
-    .win { background: #0f0; }
-    .lose { background: #f00; }
-  </style>
-</head>
-<body>
-  <div id="container">
-    <img id="hero" src="" alt="Hero">
-    <div id="stats">
-      <span id="wins">0</span>
-      <span id="winrate">0%</span>
-      <span id="losses">0</span>
+  <head>
+    <style>
+      :root {
+        --win-color: #79ea86;
+        --lose-color: #e75757;
+      }
+      body {
+        background: rgba(0, 0, 0, 0);
+        font-family: Arial, sans-serif;
+        color: white;
+        text-align: center;
+      }
+      #container {
+        width: 300px;
+        margin: 20px auto;
+      }
+      .main {
+        position: relative;
+        width: 100%;
+        height: 150px; 
+        background-size: cover; 
+        background-position: center; 
+        border-radius: 10px;
+        overflow: hidden; 
+      }
+      .hero-name {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        text-shadow: 1px 1px 2px black;
+      }
+      .stats {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.7);
+      }
+      #bar {
+        display: flex;
+        height: 20px;
+        width: 100%;
+      }
+      #win-bar {
+        background: var(--win-color);
+        flex: 0; 
+        transition: flex 0.5s ease; 
+      }
+      #lose-bar {
+        background: var(--lose-color);
+        flex: 0;
+        transition: flex 0.5s ease;
+      }
+      .winrate {
+        display: flex;
+        justify-content: space-between;
+        align-items: middle;
+        padding: 5px 10px;
+        font-size: 18px;
+        height: 100%;
+      }
+      #wins {
+        color: var(--win-color);
+      }
+      #losses {
+        color: var(--lose-color);
+      }
+      #winrate {
+        font-size: 20px;
+      }
+      .history {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        margin-top: 10px;
+      }
+      .match {
+        width: 20px;
+        height: 20px;
+        border-radius: 3px;
+      }
+      .win {
+        background: var(--win-color);
+      }
+      .lose {
+        background: var(--lose-color);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div
+        class="main"
+        style="background-image: url('https://example.com/default.jpg')"
+      >
+        <span class="hero-name"></span>
+        <div class="stats">
+          <div id="bar">
+            <div id="win-bar"></div>
+            <div id="lose-bar"></div>
+          </div>
+          <div class="winrate">
+            <span id="wins">0</span>
+            <span id="winrate">0%</span>
+            <span id="losses">0</span>
+          </div>
+        </div>
+      </div>
+      <div class="history"></div>
     </div>
-    <div id="bar">
-      <div id="win-bar"></div>
-      <div id="lose-bar"></div>
-    </div>
-    <div id="history"></div>
-  </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDXZLdFTIZR6Xkj3pGmnEYDusLI0t79JoY",
-      databaseURL: "https://deckstatsonscreen.firebaseio.com",
-      projectId: "deckstatsonscreen",
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const winrateRef = db.ref('winrate');
-
-    function getHeroImage(deckName) {
+    <script>
+      function getHeroImage(deckName) {
         const heroes = {
-            "Death Knight": ["death knight", "dk", "дк"],
-            "Warrior": ["warrior", "варріор", "воїн"],
-            "Mage": ["mage", "маг", "мага"],
-            "Rogue": ["rogue", "рога", "розбійник"],
-            // Додай інших героїв Hearthstone
-            "Default": []
+          "Death Knight": [
+            "death knight",
+            "dk",
+            "дк",
+            "дек",
+            "deathknight",
+            "лицар смерті",
+            "ls",
+          ],
+          Warrior: ["warrior", "war", "вар", "воїн", "воїнка", "warr"],
+          Mage: ["mage", "mg", "маг", "мага", "мг"],
+          Rogue: ["rogue", "rog", "рога", "розбійник", "розб", "ro"],
+          Shaman: ["shaman", "sham", "шам", "шаман", "шм", "sh"],
+          Warlock: ["warlock", "wl", "варлок", "вл", "lock", "лок"],
+          Priest: ["priest", "pr", "пріст", "жрець", "жр"],
+          Paladin: ["paladin", "pal", "пал", "паладин", "пл", "pally", "палі"],
+          Hunter: ["hunter", "hunt", "хант", "мисливець", "мис", "hn"],
+          Druid: ["druid", "dru", "дру", "друїд", "друль"],
+          "Demon Hunter": [
+            "demon hunter",
+            "dh",
+            "дх",
+            "демон хантер",
+            "демон",
+            "dhunt",
+          ],
+          Default: [],
         };
         const images = {
-            "Death Knight": "https://example.com/deathknight.jpg",
-            "Warrior": "https://example.com/warrior.jpg",
-            "Mage": "https://example.com/mage.jpg",
-            "Rogue": "https://example.com/rogue.jpg",
-            "Default": "https://example.com/default.jpg"
+          "Death Knight": "https://i.redd.it/7wrdzdooldx91.png",
+          Warrior:
+            "https://blz-contentstack-images.akamaized.net/v3/assets/bltc965041283bac56c/blt5677de4c919e9430/5e4da44ca9f0fb732c24c397/warrior.jpg",
+          Mage: "https://blz-contentstack-images.akamaized.net/v3/assets/bltc965041283bac56c/bltfad439f31b38dad2/5e4da46f8286c81bdae7858c/mage.jpg",
+          Rogue:
+            "https://blz-contentstack-images.akamaized.net/v3/assets/bltc965041283bac56c/blt2fc4edc7ed836f8a/5e6008788286c81bdae78b9d/Rogue.jpg",
+          Shaman:
+            "https://blz-contentstack-images.akamaized.net/v3/assets/bltc965041283bac56c/bltd6694bd0e56ba114/5e4da3cba481381bd5d2e9d7/shaman.jpg",
+          Warlock:
+            "https://blz-contentstack-images.akamaized.net/v3/assets/bltc965041283bac56c/bltad0a2dc55b70fa29/5e4ee38e8d83401be1195eaa/warlock.jpg",
+          Priest:
+            "https://blz-contentstack-images.akamaized.net/v3/assets/bltc965041283bac56c/blt4ff23385f5f401ef/5e500e588dc1e51c53168a5a/priest.jpg",
+          Paladin:
+            "https://blz-contentstack-images.akamaized.net/v3/assets/bltc965041283bac56c/blt198019879a096f53/5e4ebd3a8dc1e51c531689a4/paladin.jpg",
+          Hunter:
+            "https://blz-contentstack-images.akamaized.net/v3/assets/bltc965041283bac56c/blt12bb0cfe0878742b/5e4da461a9f0fb732c24c39b/hunter.jpg",
+          Druid:
+            "https://blz-contentstack-images.akamaized.net/v3/assets/bltc965041283bac56c/blt810ba2b34c90b740/5e501a45297b4d1b5ff02394/druid.jpg",
+          "Demon Hunter":
+            "https://blz-contentstack-images.akamaized.net/v3/assets/bltc965041283bac56c/blt881c2890e465706d/5e5fe3d58902221b5e1dd5ea/dh.jpg",
+
+          Default:
+            "https://i.pinimg.com/736x/80/a5/9d/80a59d687a0b0794efa2bcf62f7110ae.jpg",
         };
 
         const deckLower = deckName.toLowerCase();
         for (const [hero, aliases] of Object.entries(heroes)) {
-            if (aliases.some(alias => deckLower.includes(alias))) {
+          if (aliases.some((alias) => deckLower.includes(alias))) {
             return images[hero];
-            }
+          }
         }
         return images["Default"];
-    }
+      }
 
-    winrateRef.on('value', (snapshot) => {
-        const data = snapshot.val() || { decks: { Default: { wins: 0, losses: 0, history: [] } }, currentDeck: 'Default' };
-        const current = data.decks[data.currentDeck];
-        const total = current.wins + current.losses;
-        const winrate = total > 0 ? (current.wins / total * 100).toFixed(1) : 0;
+      function updateStats() {
+        fetch("http://localhost:3000/stats")
+          .then((response) => response.json())
+          .then((data) => {
+            const current = data.decks[data.currentDeck] || {
+              wins: 0,
+              losses: 0,
+              history: [],
+            };
+            const total = current.wins + current.losses;
+            const winrate =
+              total > 0 ? ((current.wins / total) * 100).toFixed(1) : 0;
 
-        document.getElementById('hero').src = getHeroImage(data.currentDeck); // Оновимо цю функцію нижче
-        document.getElementById('wins').innerText = current.wins;
-        document.getElementById('losses').innerText = current.losses;
-        document.getElementById('winrate').innerText = `${winrate}%`;
-        document.getElementById('win-bar').style.flex = current.wins;
-        document.getElementById('lose-bar').style.flex = current.losses;
+            document.querySelector(
+              ".main"
+            ).style.backgroundImage = `url('${getHeroImage(
+              data.currentDeck
+            )}')`;
+            document.querySelector(".hero-name").innerText = data.currentDeck;
 
-        const historyDiv = document.getElementById('history');
-        historyDiv.innerHTML = '';
-        current.history.slice(-5).forEach(result => {
-            const match = document.createElement('div');
-            match.className = `match ${result}`;
-            historyDiv.appendChild(match);
-        });
-    });
-  </script>
-</body>
+            // Оновлення статистики
+            document.getElementById("wins").innerText = current.wins;
+            document.getElementById("losses").innerText = current.losses;
+            document.getElementById("winrate").innerText = `${winrate}%`;
+            document.getElementById("win-bar").style.flex = current.wins;
+            document.getElementById("lose-bar").style.flex = current.losses;
+
+            // Оновлення історії
+            const historyDiv = document.querySelector(".history");
+            historyDiv.innerHTML = "";
+            current.history.slice(-10).forEach((result) => {
+              const match = document.createElement("div");
+              match.className = `match ${result}`;
+              historyDiv.appendChild(match);
+            });
+          })
+          .catch((error) => console.error("Error fetching stats:", error));
+      }
+
+      updateStats();
+      setInterval(updateStats, 5000);
+    </script>
+  </body>
 </html>
