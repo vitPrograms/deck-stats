@@ -179,7 +179,7 @@
       }
 
       function updateStats() {
-        fetch("https://a492dbc2-6a6b-4b24-8e44-c455b19fd2e0-00-14467aguvcr35.worf.replit.dev/")
+        fetch("https://a492dbc2-6a6b-4b24-8e44-c455b19fd2e0-00-14467aguvcr35.worf.replit.dev/stats")
           .then((response) => response.json())
           .then((data) => {
             const current = data.decks[data.currentDeck] || {
