@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      background: rgba(0, 0, 0, 0);
+      font-family: Arial, sans-serif;
+      color: white;
+      text-align: center;
+    }
+    #container {
+      width: 300px;
+      margin: 20px auto;
+    }
+    #hero {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    #stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10px 0;
+      font-size: 20px;
+    }
+    #wins { color: #0f0; }
+    #losses { color: #f00; }
+    #winrate { font-size: 24px; }
+    #bar {
+      display: flex;
+      height: 20px;
+      width: 100%;
+      background: #333;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    #win-bar { background: #0f0; }
+    #lose-bar { background: #f00; }
+    #history {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .match {
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+    }
+    .win { background: #0f0; }
+    .lose { background: #f00; }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <img id="hero" src="" alt="Hero">
+    <div id="stats">
+      <span id="wins">0</span>
+      <span id="winrate">0%</span>
+      <span id="losses">0</span>
+    </div>
+    <div id="bar">
+      <div id="win-bar"></div>
+      <div id="lose-bar"></div>
+    </div>
+    <div id="history"></div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDXZLdFTIZR6Xkj3pGmnEYDusLI0t79JoY",
+      databaseURL: "https://deckstatsonscreen.firebaseio.com",
+      projectId: "deckstatsonscreen",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const winrateRef = db.ref('winrate');
+
+    function getHeroImage(deckName) {
+        const heroes = {
+            "Death Knight": ["death knight", "dk", "дк"],
+            "Warrior": ["warrior", "варріор", "воїн"],
+            "Mage": ["mage", "маг", "мага"],
+            "Rogue": ["rogue", "рога", "розбійник"],
+            // Додай інших героїв Hearthstone
+            "Default": []
+        };
+        const images = {
+            "Death Knight": "https://example.com/deathknight.jpg",
+            "Warrior": "https://example.com/warrior.jpg",
+            "Mage": "https://example.com/mage.jpg",
+            "Rogue": "https://example.com/rogue.jpg",
+            "Default": "https://example.com/default.jpg"
+        };
+
+        const deckLower = deckName.toLowerCase();
+        for (const [hero, aliases] of Object.entries(heroes)) {
+            if (aliases.some(alias => deckLower.includes(alias))) {
+            return images[hero];
+            }
+        }
+        return images["Default"];
+    }
+
+    winrateRef.on('value', (snapshot) => {
+        const data = snapshot.val() || { decks: { Default: { wins: 0, losses: 0, history: [] } }, currentDeck: 'Default' };
+        const current = data.decks[data.currentDeck];
+        const total = current.wins + current.losses;
+        const winrate = total > 0 ? (current.wins / total * 100).toFixed(1) : 0;
+
+        document.getElementById('hero').src = getHeroImage(data.currentDeck); // Оновимо цю функцію нижче
+        document.getElementById('wins').innerText = current.wins;
+        document.getElementById('losses').innerText = current.losses;
+        document.getElementById('winrate').innerText = `${winrate}%`;
+        document.getElementById('win-bar').style.flex = current.wins;
+        document.getElementById('lose-bar').style.flex = current.losses;
+
+        const historyDiv = document.getElementById('history');
+        historyDiv.innerHTML = '';
+        current.history.slice(-5).forEach(result => {
+            const match = document.createElement('div');
+            match.className = `match ${result}`;
+            historyDiv.appendChild(match);
+        });
+    });
+  </script>
+</body>
+</html>
