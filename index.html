@@ -282,7 +282,7 @@
             // Оновлення історії
             const historyDiv = document.querySelector(".history");
             historyDiv.innerHTML = "";
-            current.history.slice(-10).forEach((result) => {
+            current.history.slice(-12).forEach((result) => {
               const match = document.createElement("div");
               match.className = `match ${result}`;
               historyDiv.appendChild(match);
