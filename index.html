@@ -81,7 +81,7 @@
         display: flex;
         justify-content: center;
         gap: 5px;
-        margin-top: 10px;
+        margin-bottom: 10px;
       }
       .match {
         width: 30px;
@@ -130,6 +130,7 @@
   </head>
   <body>
     <div id="container">
+      <div class="history"></div>
       <div
         class="main"
         style="background-image: url('https://example.com/default.jpg')"
@@ -150,7 +151,6 @@
         <span id="crown">👑</span>
         <div id="crack"></div>
       </div>
-      <div class="history"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -289,7 +289,7 @@
             // Оновлення історії
             const historyDiv = document.querySelector(".history");
             historyDiv.innerHTML = "";
-            current.history.slice(-12).forEach((result) => {
+            current.history.slice(-15).forEach((result) => {
               const match = document.createElement("div");
               match.className = `match ${result}`;
               historyDiv.appendChild(match);
