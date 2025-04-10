@@ -5,6 +5,8 @@
       :root {
         --win-color: #79ea86;
         --lose-color: #e75757;
+        --win-secondary: #2ee143;
+        --lose-secondary: #e12f2f;
       }
       body {
         background: rgba(0, 0, 0, 0);
@@ -13,14 +15,14 @@
         text-align: center;
       }
       #container {
-        width: 300px;
+        width: 600px;
         margin: 20px auto;
-        position: relative; /* Для позиціонування ефектів */
+        position: relative;
       }
       .main {
         position: relative;
         width: 100%;
-        height: 150px;
+        height: 300px;
         background-size: cover;
         background-position: center;
         border-radius: 10px;
@@ -30,9 +32,9 @@
         position: absolute;
         top: 10px;
         left: 10px;
-        font-size: 18px;
+        font-size: 38px;
         font-weight: bold;
-        text-shadow: 1px 1px 2px black;
+        text-shadow: 2px 2px 2px black;
       }
       .stats {
         position: absolute;
@@ -59,18 +61,21 @@
         display: flex;
         justify-content: space-between;
         align-items: middle;
-        padding: 5px 10px;
-        font-size: 18px;
+        padding: 10px 20px;
+        font-size: 24px;
         height: 100%;
       }
       #wins {
+        font-weight: 600;
         color: var(--win-color);
       }
       #losses {
+        font-weight: 600;
         color: var(--lose-color);
       }
       #winrate {
-        font-size: 20px;
+        font-size: 28px;
+        font-weight: 600;
       }
       .history {
         display: flex;
@@ -79,15 +84,17 @@
         margin-top: 10px;
       }
       .match {
-        width: 20px;
-        height: 20px;
+        width: 30px;
+        height: 30px;
         border-radius: 3px;
       }
       .win {
         background: var(--win-color);
+        box-shadow: inset 0px 0px 10px 4px var(--win-secondary);
       }
       .lose {
         background: var(--lose-color);
+        box-shadow: inset 0px 0px 10px 4px var(--lose-secondary);
       }
       /* Ефекти */
       #crown {
