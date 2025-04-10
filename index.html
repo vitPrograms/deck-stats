@@ -15,15 +15,16 @@
       #container {
         width: 300px;
         margin: 20px auto;
+        position: relative; /* Для позиціонування ефектів */
       }
       .main {
         position: relative;
         width: 100%;
-        height: 150px; 
-        background-size: cover; 
-        background-position: center; 
+        height: 150px;
+        background-size: cover;
+        background-position: center;
         border-radius: 10px;
-        overflow: hidden; 
+        overflow: hidden;
       }
       .hero-name {
         position: absolute;
@@ -46,8 +47,8 @@
       }
       #win-bar {
         background: var(--win-color);
-        flex: 0; 
-        transition: flex 0.5s ease; 
+        flex: 0;
+        transition: flex 0.5s ease;
       }
       #lose-bar {
         background: var(--lose-color);
@@ -88,6 +89,36 @@
       .lose {
         background: var(--lose-color);
       }
+      /* Ефекти */
+      #crown {
+        position: absolute;
+        top: -50px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 50px;
+        color: gold;
+        opacity: 0;
+        transition: all 1s ease;
+      }
+      #crown.active {
+        top: 20px;
+        opacity: 1;
+      }
+      #crack {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url("https://img.freepik.com/premium-vector/earthquake-cracking-holes-ground-cracks-top-view-crushed-texture-black-background_136545-711.jpg")
+          no-repeat center; /* Тріщина */
+        background-size: cover;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+      #crack.active {
+        opacity: 0.5;
+      }
     </style>
   </head>
   <body>
@@ -108,10 +139,14 @@
             <span id="losses">0</span>
           </div>
         </div>
+        <!-- Елементи для ефектів -->
+        <span id="crown">👑</span>
+        <div id="crack"></div>
       </div>
       <div class="history"></div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
       function getHeroImage(deckName) {
         const heroes = {
@@ -178,8 +213,34 @@
         return images["Default"];
       }
 
+      let prevWins = 0;
+      let prevLosses = 0;
+
+      function triggerWinEffect() {
+        // Конфеті
+        confetti({
+          particleCount: 50,
+          spread: 50,
+          origin: { y: 0.6 },
+        });
+
+        // Корона
+        const crown = document.getElementById("crown");
+        crown.classList.add("active");
+        setTimeout(() => crown.classList.remove("active"), 1000);
+      }
+
+      function triggerLoseEffect() {
+        // Тріщина
+        const crack = document.getElementById("crack");
+        crack.classList.add("active");
+        setTimeout(() => crack.classList.remove("active"), 1000); // Зникає через 1 секунду
+      }
+
       function updateStats() {
-        fetch("http://localhost:3000/stats")
+        fetch(
+          "https://a492dbc2-6a6b-4b24-8e44-c455b19fd2e0-00-14467aguvcr35.worf.replit.dev/stats"
+        )
           .then((response) => response.json())
           .then((data) => {
             const current = data.decks[data.currentDeck] || {
@@ -197,6 +258,12 @@
               data.currentDeck
             )}')`;
             document.querySelector(".hero-name").innerText = data.currentDeck;
+
+            // Перевірка на нові перемоги чи поразки
+            if (current.wins > prevWins) triggerWinEffect();
+            if (current.losses > prevLosses) triggerLoseEffect();
+            prevWins = current.wins;
+            prevLosses = current.losses;
 
             // Оновлення статистики
             document.getElementById("wins").innerText = current.wins;
