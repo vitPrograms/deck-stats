@@ -156,37 +156,37 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
       function getHeroImage(deckName) {
-  const heroes = {
-    "Death Knight": [
-      "death knight",
-      "dk",
-      "дк",
-      "дек",
-      "deathknight",
-      "лицар смерті",
-      "ls",
-    ],
-    Warrior: ["warrior", "war", "вар", "воїн", "воїнка", "warr"],
-    Mage: ["mage", "mg", "маг", "мага", "мг"],
-    Rogue: ["rogue", "rog", "рога", "розбійник", "розб", "ro"],
-    Shaman: ["shaman", "sham", "шам", "шаман", "шм", "sh"],
-    Warlock: ["warlock", "wl", "варлок", "вл", "lock", "лок"],
-    Priest: ["priest", "pr", "пріст", "жрець", "жр"],
-    Paladin: ["paladin", "pal", "пал", "паладин", "пл", "pally", "палі"],
-    Hunter: ["hunter", "hunt", "хант", "мисливець", "мис", "hn"],
-    Druid: ["druid", "dru", "дру", "друїд", "друль"],
-    "Demon Hunter": [
-      "demon hunter",
-      "dh",
-      "дх",
-      "демон хантер",
-      "демон",
-      "dhunt",
-    ],
-    Default: [],
-  };
+        const heroes = {
+          "Death Knight": [
+            "death knight",
+            "dk",
+            "дк",
+            "дек",
+            "deathknight",
+            "лицар смерті",
+            "ls",
+          ],
+          Warrior: ["warrior", "war", "вар", "воїн", "воїнка", "warr"],
+          Mage: ["mage", "mg", "маг", "мага", "мг"],
+          Rogue: ["rogue", "rog", "рога", "розбійник", "розб", "ro"],
+          Shaman: ["shaman", "sham", "шам", "шаман", "шм", "sh"],
+          Warlock: ["warlock", "wl", "варлок", "вл", "lock", "лок"],
+          Priest: ["priest", "pr", "пріст", "жрець", "жр"],
+          Paladin: ["paladin", "pal", "пал", "паладин", "пл", "pally", "палі"],
+          Hunter: ["hunter", "hunt", "хант", "мисливець", "мис", "hn"],
+          Druid: ["druid", "dru", "дру", "друїд", "друль"],
+          "Demon Hunter": [
+            "demon hunter",
+            "dh",
+            "дх",
+            "демон хантер",
+            "демон",
+            "dhunt",
+          ],
+          Default: [],
+        };
 
-  const images = {
+        const images = {
           "Death Knight": "https://i.redd.it/7wrdzdooldx91.png",
           Warrior:
             "https://blz-contentstack-images.akamaized.net/v3/assets/bltc965041283bac56c/blt5677de4c919e9430/5e4da44ca9f0fb732c24c397/warrior.jpg",
@@ -212,30 +212,44 @@
             "https://i.pinimg.com/736x/80/a5/9d/80a59d687a0b0794efa2bcf62f7110ae.jpg",
         };
 
-  // Розбиваємо назву на слова
-  const words = deckName.toLowerCase().split(/\s+/);
+        // Шукаємо клас у квадратних дужках
+        const bracketMatch = deckName.match(/\[([^\]]+)\]/);
+        if (bracketMatch) {
+          const classInBrackets = bracketMatch[1].trim();
+          // Перевіряємо, чи вказаний клас є ключем у heroes
+          for (const hero of Object.keys(heroes)) {
+            if (classInBrackets.toLowerCase() === hero.toLowerCase()) {
+              return images[hero];
+            }
+          }
+        }
 
-  // Шукаємо збіги для кожного класу
-  let bestMatch = null;
-  let bestMatchLength = 0;
+        // Якщо дужок немає або клас невалідний, шукаємо по аліасах
+        // Очищаємо назву від дужок
+        const cleanDeckName = deckName.replace(/\[([^\]]+)\]/, "").trim();
+        const words = cleanDeckName.toLowerCase().split(/\s+/);
 
-  for (const [hero, aliases] of Object.entries(heroes)) {
-    for (const alias of aliases) {
-      // Перевіряємо, чи є аліас точним словом у назві
-      if (words.includes(alias) && alias.length > bestMatchLength) {
-        bestMatch = hero;
-        bestMatchLength = alias.length;
+        let bestMatch = null;
+        let bestMatchLength = 0;
+
+        for (const [hero, aliases] of Object.entries(heroes)) {
+          for (const alias of aliases) {
+            if (words.includes(alias) && alias.length > bestMatchLength) {
+              bestMatch = hero;
+              bestMatchLength = alias.length;
+            }
+            if (
+              cleanDeckName.toLowerCase().includes(alias) &&
+              alias.length > bestMatchLength
+            ) {
+              bestMatch = hero;
+              bestMatchLength = alias.length;
+            }
+          }
+        }
+
+        return images[bestMatch || "Default"];
       }
-      // Додатково перевіряємо повні фрази (наприклад, "demon hunter")
-      if (deckName.toLowerCase().includes(alias) && alias.length > bestMatchLength) {
-        bestMatch = hero;
-        bestMatchLength = alias.length;
-      }
-    }
-  }
-
-  return images[bestMatch || "Default"];
-}
 
       let prevWins = 0;
       let prevLosses = 0;
