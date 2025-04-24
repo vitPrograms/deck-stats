@@ -277,57 +277,51 @@
       }
 
       function updateStats() {
-        fetch(
-          "https://deck-stats.glitch.me/stats"
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            const current = data.decks[data.currentDeck] || {
-              wins: 0,
-              losses: 0,
-              history: [],
-            };
-            const total = current.wins + current.losses;
-            const winrate =
-              total > 0 ? ((current.wins / total) * 100).toFixed(1) : 0;
+  fetch("https://deck-stats.glitch.me/stats")
+    .then((response) => response.json())
+    .then((data) => {
+      const current = data.decks[data.currentDeck] || {
+        wins: 0,
+        losses: 0,
+        history: [],
+        fullName: data.currentDeckFullName // Використовуємо currentDeckFullName
+      };
+      const total = current.wins + current.losses;
+      const winrate = total > 0 ? ((current.wins / total) * 100).toFixed(1) : 0;
 
-            document.querySelector(
-              ".main"
-            ).style.backgroundImage = `url('${getHeroImage(
-              data.currentDeck
-            )}')`;
-            document.querySelector(".hero-name").innerText = data.currentDeck;
+      // Використовуємо currentDeckFullName для зображення та назви
+      document.querySelector(
+        ".main"
+      ).style.backgroundImage = `url('${getHeroImage(data.currentDeckFullName)}')`;
+      document.querySelector(".hero-name").innerText = data.currentDeckFullName;
 
-            // Перевірка на зміну колоди
-            if (data.currentDeck !== prevDeck) {
-              prevWins = current.wins;
-              prevLosses = current.losses;
-              prevDeck = data.currentDeck;
-            } else {
-              if (current.wins > prevWins) triggerWinEffect();
-              if (current.losses > prevLosses) triggerLoseEffect();
-              prevWins = current.wins;
-              prevLosses = current.losses;
-            }
-
-            // Оновлення статистики
-            document.getElementById("wins").innerText = current.wins;
-            document.getElementById("losses").innerText = current.losses;
-            document.getElementById("winrate").innerText = `${winrate}%`;
-            document.getElementById("win-bar").style.flex = current.wins;
-            document.getElementById("lose-bar").style.flex = current.losses;
-
-            // Оновлення історії
-            const historyDiv = document.querySelector(".history");
-            historyDiv.innerHTML = "";
-            current.history.slice(-15).forEach((result) => {
-              const match = document.createElement("div");
-              match.className = `match ${result}`;
-              historyDiv.appendChild(match);
-            });
-          })
-          .catch((error) => console.error("Error fetching stats:", error));
+      if (data.currentDeck !== prevDeck) {
+        prevWins = current.wins;
+        prevLosses = current.losses;
+        prevDeck = data.currentDeck;
+      } else {
+        if (current.wins > prevWins) triggerWinEffect();
+        if (current.losses > prevLosses) triggerLoseEffect();
+        prevWins = current.wins;
+        prevLosses = current.losses;
       }
+
+      document.getElementById("wins").innerText = current.wins;
+      document.getElementById("losses").innerText = current.losses;
+      document.getElementById("winrate").innerText = `${winrate}%`;
+      document.getElementById("win-bar").style.flex = current.wins;
+      document.getElementById("lose-bar").style.flex = current.losses;
+
+      const historyDiv = document.querySelector(".history");
+      historyDiv.innerHTML = "";
+      current.history.slice(-15).forEach((result) => {
+        const match = document.createElement("div");
+        match.className = `match ${result}`;
+        historyDiv.appendChild(match);
+      });
+    })
+    .catch((error) => console.error("Error fetching stats:", error));
+}
 
       updateStats();
       setInterval(updateStats, 5000);
